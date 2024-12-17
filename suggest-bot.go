@@ -2,12 +2,12 @@ package main
 
 import (
     "log"
-   // "os"
+   "os"
     tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func main() {
-    bot, err := tgbotapi.NewBotAPI("7208891763:AAGvBxeFxqLKtmXvDsJ7NDYPJb6s6Oc8YAY")
+    bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_API_TOKEN"))
     // 
     if err != nil {
         log.Panic(err)
