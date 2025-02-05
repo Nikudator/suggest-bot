@@ -1,43 +1,67 @@
 package main
 
 import (
-    "log"
-   "os"
-    tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"log"
+	"os"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
-    bot, err := tgbotapi.NewBotAPI(os.Getenv("TELEGRAM_BOT_API_TOKEN"))
-    // 
-    if err != nil {
-        log.Panic(err)
-    }
 
-    bot.Debug = true
+	const configPath = "config.yml"
+	type Cfg struct {
+		TELEGRAM_BOT_API_TOKEN string `yaml:"token"`
+	}
+	var AppConfig *Cfg
+	f, err := os.Open(configPath)
 
-    log.Printf("Authorized on account %s", bot.Self.UserName)
+	if err != nil {
+		log.Panic(err)
+	}
+	defer f.Close()
 
-    u := tgbotapi.NewUpdate(0)
-    u.Timeout = 60
+	decoder := yaml.NewDecoder(f)
+	err = decoder.Decode(&AppConfig)
 
-    updates := bot.GetUpdatesChan(u)
+	if err != nil {
+		log.Panic(err)
+	}
 
-for update := range updates {
-    if update.Message != nil {
-        log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+	bot_token := AppConfig.TELEGRAM_BOT_API_TOKEN
 
-        var msg tgbotapi.MessageConfig
+	bot, err := tgbotapi.NewBotAPI(bot_token)
+	//
+	if err != nil {
+		log.Panic(err)
+	}
 
-        switch update.Message.Command() {
-        case "start":
-            msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Welcome! I am your bot.")
-        case "help":
-            msg = tgbotapi.NewMessage(update.Message.Chat.ID, "I can help you with the following commands:\n/start - Start the bot\n/help - Display this help message")
-        default:
-            msg = tgbotapi.NewMessage(update.Message.Chat.ID, "I don't know that command")
-        }
+	bot.Debug = true
 
-        bot.Send(msg)
-    }
-}
+	log.Printf("Authorized on account %s", bot.Self.UserName)
+
+	u := tgbotapi.NewUpdate(0)
+	u.Timeout = 60
+
+	updates := bot.GetUpdatesChan(u)
+
+	for update := range updates {
+		if update.Message != nil {
+			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+
+			var msg tgbotapi.MessageConfig
+
+			switch update.Message.Command() {
+			case "start":
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Welcome! I am your bot.")
+			case "help":
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "I can help you with the following commands:\n/start - Start the bot\n/help - Display this help message")
+			default:
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "I don't know that command")
+			}
+
+			bot.Send(msg)
+		}
+	}
 }
