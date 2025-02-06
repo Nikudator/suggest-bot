@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-
+	//Читаем конфиг
 	const configPath = "config.yml"
 	type Cfg struct {
 		TELEGRAM_BOT_API_TOKEN string `yaml:"token"`
@@ -31,6 +31,7 @@ func main() {
 
 	bot_token := AppConfig.TELEGRAM_BOT_API_TOKEN
 
+	//Создаём бота
 	bot, err := tgbotapi.NewBotAPI(bot_token)
 	//
 	if err != nil {
@@ -39,7 +40,7 @@ func main() {
 
 	bot.Debug = true
 
-	log.Printf("Authorized on account %s", bot.Self.UserName)
+	log.Printf("Бот подключился %s", bot.Self.UserName)
 
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
