@@ -1,10 +1,11 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
+
+	"database/sql"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"gopkg.in/yaml.v2"
@@ -50,9 +51,16 @@ func main() {
 	db, err := sql.Open("postgres", psqlInfo)
 
 	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	fmt.Println("Successfully connected to PostgreSQL!")
 
 	//Создаём бота
 	bot, err := tgbotapi.NewBotAPI(bot_token)
