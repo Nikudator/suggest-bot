@@ -1,13 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 
-	"database/sql"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"gopkg.in/yaml.v2"
 )
 
@@ -15,12 +15,14 @@ func main() {
 	//Читаем конфиг
 	const configPath = "config.yml"
 	type Cfg struct {
-		TELEGRAM_BOT_API_TOKEN string `yaml:"token"`
-		POSTGRES_HOST          string `yaml:"postgres_host"`
-		POSTGRES_PORT          string `yaml:"postgres_port"`
-		POSTGRES_DB            string `yaml:"postgres_db"`
-		POSTGRES_USER          string `yaml:"postgres_user"`
-		POSTGRES_PASS          string `yaml:"postgres_pass"`
+		TELEGRAM_BOT_API_TOKEN  string `yaml:"token"`
+		POSTGRES_HOST           string `yaml:"postgres_host"`
+		POSTGRES_PORT           int    `yaml:"postgres_port"`
+		POSTGRES_DB             string `yaml:"postgres_db"`
+		POSTGRES_USER           string `yaml:"postgres_user"`
+		POSTGRES_PASS           string `yaml:"postgres_pass"`
+		POSTGRES_SSL            string `yaml:"postgres_ssl"`
+		POSTGRES_POOL_MAX_CONNS int    `yaml:"postgres_pool_max_conns"`
 	}
 	var AppConfig *Cfg
 	f, err := os.Open(configPath)
@@ -43,24 +45,21 @@ func main() {
 	postgres_db := AppConfig.POSTGRES_DB
 	postgres_user := AppConfig.POSTGRES_USER
 	postgres_pass := AppConfig.POSTGRES_PASS
+	postgres_ssl := AppConfig.POSTGRES_SSL
+	postgres_pool_max_conns := AppConfig.POSTGRES_POOL_MAX_CONNS
 
 	//Инициализация БД
-	psqlInfo := fmt.Sprintf("postgres_host=%s postgres_port=%d postgres_user=%s "+
-		"postgres_pass=%s postgres_db=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
 
-	if err != nil {
-		log.Panic(err)
-	}
-	defer db.Close()
+	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s&pool_max_conns=%d",
+		postgres_user, postgres_pass, postgres_host, postgres_port, postgres_db, postgres_ssl, postgres_pool_max_conns)
 
-	err = db.Ping()
+	pool, err := pgxpool.New(context.Background(), dbURL)
 	if err != nil {
-		log.Panic(err)
+		log.Panicf("Unable to connection to database: %v\n", err)
 	}
 
-	fmt.Println("Successfully connected to PostgreSQL!")
+	defer pool.Close()
+	log.Print("Connected to database!")
 
 	//Создаём бота
 	bot, err := tgbotapi.NewBotAPI(bot_token)

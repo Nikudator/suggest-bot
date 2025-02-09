@@ -29,3 +29,4 @@ config.yml
 
 # pgdata
 postgresql/data
+postgresql/init
