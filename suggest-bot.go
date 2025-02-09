@@ -49,7 +49,6 @@ func main() {
 	postgres_pool_max_conns := AppConfig.POSTGRES_POOL_MAX_CONNS
 
 	//Инициализация БД
-
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s&pool_max_conns=%d",
 		postgres_user, postgres_pass, postgres_host, postgres_port, postgres_db, postgres_ssl, postgres_pool_max_conns)
 
