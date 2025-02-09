@@ -23,6 +23,7 @@ func main() {
 		POSTGRES_PASS           string `yaml:"postgres_pass"`
 		POSTGRES_SSL            string `yaml:"postgres_ssl"`
 		POSTGRES_POOL_MAX_CONNS int    `yaml:"postgres_pool_max_conns"`
+		ADMIN_ID                int    `yaml:"admin_id"`
 	}
 	var AppConfig *Cfg
 	f, err := os.Open(configPath)
@@ -47,6 +48,7 @@ func main() {
 	postgres_pass := AppConfig.POSTGRES_PASS
 	postgres_ssl := AppConfig.POSTGRES_SSL
 	postgres_pool_max_conns := AppConfig.POSTGRES_POOL_MAX_CONNS
+	admin_id := AppConfig.ADMIN_ID
 
 	//Инициализация БД
 	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s&pool_max_conns=%d",
@@ -62,7 +64,7 @@ func main() {
 
 	//Создаём бота
 	bot, err := tgbotapi.NewBotAPI(bot_token)
-	//
+
 	if err != nil {
 		log.Panic(err)
 	}
@@ -84,11 +86,14 @@ func main() {
 
 			switch update.Message.Command() {
 			case "start":
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Приветствую! Я бот для отправки сообщений в группу РШ")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Приветствую! Я бот для отправки сообщений и постов на канал \"Реальное Шушенское\"")
 			case "help":
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Я поддерживаю следующие комманды:\n/start - Старт бота\n/help - Показать помощь\n/send - Отправить сообщение администратору группы или пост для публикации.")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Я поддерживаю следующие комманды:\n/start - Старт бота\n /help - Показать помощь\n Если хотите опубликовать пост или написать администратору сообщение, просто напишите его и, если нужно, прикрепите фото или видео.")
 			default:
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Неизвестная команда")
+				var msg_adm tgbotapi.ForwardConfig
+				msg_adm = tgbotapi.NewForward(int64(admin_id), update.Message.From.ID, update.Message.MessageID)
+				bot.Send(msg_adm)
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Ваше сообщение отправлено администратору канала.")
 			}
 
 			bot.Send(msg)
