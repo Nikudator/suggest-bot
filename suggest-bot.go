@@ -84,11 +84,11 @@ func main() {
 
 			switch update.Message.Command() {
 			case "start":
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Welcome! I am your bot.")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Приветствую! Я бот для отправки сообщений в группу РШ")
 			case "help":
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "I can help you with the following commands:\n/start - Start the bot\n/help - Display this help message")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Я поддерживаю следующие комманды:\n/start - Старт бота\n/help - Показать помощь\n/send - Отправить сообщение администратору группы или пост для публикации.")
 			default:
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "I don't know that command")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Неизвестная команда")
 			}
 
 			bot.Send(msg)
