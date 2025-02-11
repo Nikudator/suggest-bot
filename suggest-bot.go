@@ -1,13 +1,10 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"gopkg.in/yaml.v2"
 )
 
@@ -15,15 +12,8 @@ func main() {
 	//Читаем конфиг
 	const configPath = "config.yml"
 	type Cfg struct {
-		TELEGRAM_BOT_API_TOKEN  string `yaml:"token"`
-		POSTGRES_HOST           string `yaml:"postgres_host"`
-		POSTGRES_PORT           int    `yaml:"postgres_port"`
-		POSTGRES_DB             string `yaml:"postgres_db"`
-		POSTGRES_USER           string `yaml:"postgres_user"`
-		POSTGRES_PASS           string `yaml:"postgres_pass"`
-		POSTGRES_SSL            string `yaml:"postgres_ssl"`
-		POSTGRES_POOL_MAX_CONNS int    `yaml:"postgres_pool_max_conns"`
-		ADMIN_ID                int    `yaml:"admin_id"`
+		TELEGRAM_BOT_API_TOKEN string `yaml:"token"`
+		ADMIN_ID               int    `yaml:"admin_id"`
 	}
 	var AppConfig *Cfg
 	f, err := os.Open(configPath)
@@ -41,26 +31,7 @@ func main() {
 	}
 
 	bot_token := AppConfig.TELEGRAM_BOT_API_TOKEN
-	postgres_host := AppConfig.POSTGRES_HOST
-	postgres_port := AppConfig.POSTGRES_PORT
-	postgres_db := AppConfig.POSTGRES_DB
-	postgres_user := AppConfig.POSTGRES_USER
-	postgres_pass := AppConfig.POSTGRES_PASS
-	postgres_ssl := AppConfig.POSTGRES_SSL
-	postgres_pool_max_conns := AppConfig.POSTGRES_POOL_MAX_CONNS
 	admin_id := AppConfig.ADMIN_ID
-
-	//Инициализация БД
-	dbURL := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s&pool_max_conns=%d",
-		postgres_user, postgres_pass, postgres_host, postgres_port, postgres_db, postgres_ssl, postgres_pool_max_conns)
-
-	pool, err := pgxpool.New(context.Background(), dbURL)
-	if err != nil {
-		log.Panicf("Unable to connection to database: %v\n", err)
-	}
-
-	defer pool.Close()
-	log.Print("Connected to database!")
 
 	//Создаём бота
 	bot, err := tgbotapi.NewBotAPI(bot_token)
