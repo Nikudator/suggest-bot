@@ -64,7 +64,7 @@ func main() {
 				var msg_adm tgbotapi.ForwardConfig
 				msg_adm = tgbotapi.NewForward(int64(admin_id), update.Message.From.ID, update.Message.MessageID)
 				bot.Send(msg_adm)
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Ваше сообщение отправлено администратору канала.")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Ваше сообщение отправлено администратору канала.\nКоммерческие объявления публикуются только на платной основе")
 			}
 
 			bot.Send(msg)
