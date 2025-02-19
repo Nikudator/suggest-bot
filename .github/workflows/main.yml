@@ -22,4 +22,5 @@ jobs:
           systemctl stop suggest-bot # Остановка бота
           go build suggest-bot.go 
           go test suggest-bot.go
+          chown -R bot:bot /var/bot/suggest-bot
           systemctl start suggest-bot #Старт бота
