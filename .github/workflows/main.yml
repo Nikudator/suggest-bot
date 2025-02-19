@@ -1,4 +1,4 @@
-name: Node.js CD # Название workflow (процесса автоматизации)
+name: Suggest-bot CD # Название workflow (процесса автоматизации)
 
 on:
   push:
