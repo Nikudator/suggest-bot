@@ -57,17 +57,17 @@ func main() {
 
 			switch update.Message.Command() {
 			case "start":
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Приветствую! Я бот для отправки сообщений и постов на канал \"Реальное Шушенское\" t.me/real_shush \nПросто напишите сообщение мне и я передам его администратору\nкоммерческие объявления и реклама - платные.")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Приветствую! Я бот для отправки сообщений и постов на канал \"Реальное Шушенское\" t.me/real_shush \nПросто напишите сообщение мне и я передам его администратору\nкоммерческие объявления и реклама - платные.\n К сожалению сейчас у меня нет функционала, что бы ответить вам, по всем вопросам пишите в сообщения ВК-группы За подробностями обращайтесь в сообщения группы: https://vk.com/real_shush")
 			case "help":
 				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Я поддерживаю следующие комманды:\n/start - Старт бота\n/help - Показать помощь\nЕсли хотите опубликовать пост или написать администратору сообщение, просто напишите его и, если нужно, прикрепите фото или видео.")
 			case "reklama":
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Стоимость рекламы только в telegram-канале  \"Реальное Шушенское\" - 100р.\nСтоимость в ТГ и ещё дополнительно в группе Вконтакте (13+ тыс. подписчиков) - 300р. за пост.\n")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Стоимость рекламы только в telegram-канале  \"Реальное Шушенское\" - 100р.\nСтоимость в ТГ и ещё дополнительно в группе Вконтакте (13+ тыс. подписчиков) - 300р. за пост.\nЗа подробностями размещения и оплаты обращайтесь в сообщения группы: https://vk.com/real_shush")
 
 			default:
 				var msg_adm tgbotapi.ForwardConfig
 				msg_adm = tgbotapi.NewForward(int64(admin_id), update.Message.From.ID, update.Message.MessageID)
 				bot.Send(msg_adm)
-				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Ваше сообщение отправлено администратору канала.\nКоммерческие объявления публикуются только на платной основе")
+				msg = tgbotapi.NewMessage(update.Message.Chat.ID, "Ваше сообщение отправлено администратору канала.\nКоммерческие объявления публикуются только на платной основе.")
 			}
 
 			bot.Send(msg)
